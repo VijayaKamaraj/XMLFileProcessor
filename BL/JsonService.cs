@@ -11,13 +11,13 @@ namespace XMLWebApiCore.BL
     {
          FileServiceContext _context;
          public JsonService(FileServiceContext context)=>_context=context;
-        public string CreateJson()
+        public string CreateJson(string name)
          {
-            List<Drawing> drawings=new List<Drawing>();
-            var drawingsList=_context.Drawings.ToList();
-             foreach(var drawing in drawingsList)
-             {
+            //List<Drawing> drawings=new List<Drawing>();
+            var drawing=_context.Drawings.Where(x=>x.Name==name).FirstOrDefault();
+            
                  Drawing drawingList =new Drawing();
+                 drawingList.Id=drawing.Id;
                  drawingList.Name=drawing.Name;
                  drawingList.Revision=drawing.Revision;
                  drawingList.MaxX=drawing.MaxX;
@@ -31,14 +31,13 @@ namespace XMLWebApiCore.BL
                      List<Nozzle> nozzles=_context.Nozzles.Where(x=>x.EquipmentId==equipment.Id).ToList();
                      equipment.Nozzles=nozzles;
                  }
-                    drawingList.Equipments=equipments;
-                 List<InstrumentComponent> instrumentComponents=_context.InstrumentComponents.Where(x=>x.DrawingId==drawing.Id).ToList();
+                 drawingList.Equipments=equipments;
+                 var instrumentComponents=_context.InstrumentComponents.Where(x=>x.DrawingId==drawing.Id).ToList();
                  drawingList.InstrumentComponents=instrumentComponents;
-                drawings.Add(drawingList);
+                  var pipeConnectorSymbol=_context.PipeConnectorSymbols.Where(x=>x.DrawingId==drawing.Id).ToList();
+                 drawingList.PipeConnectorSymbols=pipeConnectorSymbol;
 
-             }
-
-            string json = JsonConvert.SerializeObject(drawings, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(drawingList, Formatting.Indented);
             return json;
          }
     }

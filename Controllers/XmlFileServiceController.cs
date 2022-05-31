@@ -34,19 +34,18 @@ namespace XMLWebApiCore.Controllers
                 PlantModel plantModel =  _fileService.ProcessXMLFile(path);
                 var revision=plantModel.Drawing.Revision;
                 var name=plantModel.Drawing.Name;         
-               string json=_jsonService.CreateJson();
-                bool isRevisionNoExist= (name!=null)? _fileService.CheckRevisionNumber(revision,name):false;
-                 _fileService.AddEquipmentAndNozzleDetails(plantModel);    
+               
+                bool isRevisionNoExist= (name!=null)? _fileService.CheckRevisionNumber(revision,name):false; 
                 if(!isRevisionNoExist)
                 {
-                     _fileService.AddEquipmentAndNozzleDetails(plantModel);                  
+                    _fileService.AddEquipmentAndNozzleDetails(plantModel);
+                    string json=_jsonService.CreateJson(name);                  
                     return Ok(json);
                 }
                 else
                 {
                     return NotFound(new { message = "File Already Exist" });
                 }
-      //return Ok(json);
                
             }
            return NotFound(new { message = "Invalid File" });

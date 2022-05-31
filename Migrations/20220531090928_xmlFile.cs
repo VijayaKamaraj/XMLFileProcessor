@@ -4,7 +4,7 @@
 
 namespace XMLWebApiCore.Migrations
 {
-    public partial class FilexmlProcessor : Migration
+    public partial class xmlFile : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

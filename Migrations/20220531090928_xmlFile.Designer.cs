@@ -11,8 +11,8 @@ using XMLWebApiCore.Models.DBClasses;
 namespace XMLWebApiCore.Migrations
 {
     [DbContext(typeof(FileServiceContext))]
-    [Migration("20220531070553_FilexmlProcessor")]
-    partial class FilexmlProcessor
+    [Migration("20220531090928_xmlFile")]
+    partial class xmlFile
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

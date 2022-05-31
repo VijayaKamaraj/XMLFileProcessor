@@ -8,6 +8,6 @@ namespace XMLWebApiCore.BL
 {
     public interface IJsonService
     {
-      public  string CreateJson();
+      public  string CreateJson(string name);
     }
 }
