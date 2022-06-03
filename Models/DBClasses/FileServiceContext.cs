@@ -3,25 +3,32 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Web;
-//using System.Data.Entity.ModelConfiguration.Configuration;
-
-
 namespace XMLWebApiCore.Models.DBClasses
 {
-    public class FileServiceContext:DbContext
+    public class FileServiceContext : DbContext
     {
-        public FileServiceContext(DbContextOptions<FileServiceContext> options):base(options)
+        public FileServiceContext(DbContextOptions<FileServiceContext> options) : base(options)
         {
 
         }
-        
-        public DbSet<Drawing> Drawings {get;set;}
-        public DbSet<Equipment> Equipments { get; set; }
-        public DbSet<Nozzle> Nozzles { get; set; }
 
-        public DbSet<InstrumentComponent> InstrumentComponents{get;set;}
+        public DbSet<DrawingDB> Drawings { get; set; }
+        public DbSet<EquipmentDB> Equipments { get; set; }
+        public DbSet<NozzleDB> Nozzles { get; set; }
 
-        public DbSet<PipeConnectorSymbol> PipeConnectorSymbols{get;set;}
+        public DbSet<InstrumentComponentDB> InstrumentComponents { get; set; }
 
-        }
+        public DbSet<PipeConnectorSymbolDB> PipeConnectorSymbols { get; set; }
+
+        public DbSet<ProcessInstrumentDB> ProcessInstruments { get; set; }
+
+        public DbSet<PipingNetworkSystemDB> PipingNetworkSystems { get; set; }
+
+        public DbSet<PipingNetworkSegmentDB> PipingNetworkSegments { get; set; }
+
+        public DbSet<SignalLineDB> SignalLines { get; set; }
+
+        public DbSet<ProcessLine> ProcessLines { get; set; }
+
     }
+}

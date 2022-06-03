@@ -7,16 +7,16 @@ using System.Web;
 
 namespace XMLWebApiCore.Models.DBClasses
 {
-    public class Equipment
+    public class NozzleDB
     {
         [Key]
         public int Id { get; set; }
 
-        public string TagName { get; set; }
+        public string? TagName { get; set; }
 
-        public string ComponentClass { get; set; }
+        public string? ComponentClass { get; set; }
 
-        public string ComponentName { get; set; }
+        public string? ComponentName { get; set; }
 
         public double MinX { get; set; }
 
@@ -30,12 +30,10 @@ namespace XMLWebApiCore.Models.DBClasses
 
         public double LocationY { get; set; }
 
-        
-         [ForeignKey("Drawing")]
-         public int DrawingId {get;set;}
+        [ForeignKey("EquipmentDB")]
+        public int EquipmentDBId { get; set; }
 
-      public  List<Nozzle> Nozzles {get;set;}
+
 
     }
-        
 }

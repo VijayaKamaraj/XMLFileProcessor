@@ -1,25 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XMLWebApiCore.Models.DBClasses
 {
-    public class InstrumentComponent
+    public class InstrumentComponentDB
     {
         [Key]
         public int Id { get; set; }
 
-        public string TagName { get; set; }
+        public string? TagName { get; set; }
 
-        public string ComponentClass { get; set; }
+        public string? ComponentClass { get; set; }
 
-        public string ComponentName { get; set; }
+        public string? ComponentName { get; set; }
 
-        public string StockNumber{get;set;}
+        public string? StockNumber { get; set; }
 
         public double MinX { get; set; }
 
@@ -33,13 +29,12 @@ namespace XMLWebApiCore.Models.DBClasses
 
         public double LocationY { get; set; }
 
-        public string PersistentId {get;set;}
+        public string? PersistentId { get; set; }
 
-        
-         [ForeignKey("Drawing")]
+        [JsonIgnore]
 
-         [JsonIgnore]
-         public int DrawingId {get;set;}
+        [ForeignKey("DrawingDB")]
+        public int DrawingDBId { get; set; }
 
 
     }

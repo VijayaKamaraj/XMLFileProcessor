@@ -9,7 +9,7 @@ namespace XMLWebApiCore.Models.Classes
 {
     public class Equipment
     {
-        private string descriptionField;
+        private string? descriptionField;
         private Line[] lineField;
         private Text[] textField;
         private PersistentID persistentIDField;

@@ -5,18 +5,20 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+
+
 namespace XMLWebApiCore.Models.DBClasses
 {
-    public class PipeConnectorSymbol
+    public class SignalLineDB
     {
-        
         [Key]
         public int Id { get; set; }
 
-        public string ComponentClass { get; set; }
+        public string? ComponentClass { get; set; }
 
-        public string ComponentName { get; set; }
-        
+        public string? ComponentName { get; set; }
+
+        public string? PersistentId { get; set; }
         public double MinX { get; set; }
 
         public double MinY { get; set; }
@@ -25,20 +27,15 @@ namespace XMLWebApiCore.Models.DBClasses
 
         public double MaxY { get; set; }
 
-        public double LocationX { get; set; }
+        [ForeignKey("DrawingDB")]
 
-        public double LocationY { get; set; }
+        [JsonIgnore]
+        public int DrawingDBId { get; set; }
 
-        public string PersistentId {get;set;}
+        public string? FromID { get; set; }
 
-        [ForeignKey("Drawing")]
+        public string? ToID { get; set; }
 
-         [JsonIgnore]
-         public int DrawingId {get;set;}
-
-         public string CrossPageDrawingName {get;set;}
-
-         public string CrossPageLinkLabel {get;set;}
 
 
     }
