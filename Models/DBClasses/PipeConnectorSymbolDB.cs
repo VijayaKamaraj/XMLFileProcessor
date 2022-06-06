@@ -7,6 +7,7 @@ namespace XMLWebApiCore.Models.DBClasses
     {
 
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string? ComponentClass { get; set; }

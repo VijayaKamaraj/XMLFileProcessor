@@ -179,10 +179,11 @@ namespace XMLWebApiCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Source = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SourceTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SourceEquipmentTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Target = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TargetTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SourceEquipmentTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TargetEquipmentTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProcessLineName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DrawingDBId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -233,6 +234,7 @@ namespace XMLWebApiCore.Migrations
                     TagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ComponentClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ComponentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PersistentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MinX = table.Column<double>(type: "float", nullable: false),
                     MinY = table.Column<double>(type: "float", nullable: false),
                     MaxX = table.Column<double>(type: "float", nullable: false),
@@ -279,6 +281,27 @@ namespace XMLWebApiCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "IntermediateElements",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    intermediateElement = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ComponentClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProcessLineId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IntermediateElements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IntermediateElements_ProcessLines_ProcessLineId",
+                        column: x => x.ProcessLineId,
+                        principalTable: "ProcessLines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Equipments_DrawingDBId",
                 table: "Equipments",
@@ -288,6 +311,11 @@ namespace XMLWebApiCore.Migrations
                 name: "IX_InstrumentComponents_DrawingDBId",
                 table: "InstrumentComponents",
                 column: "DrawingDBId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IntermediateElements_ProcessLineId",
+                table: "IntermediateElements",
+                column: "ProcessLineId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Nozzles_EquipmentDBId",
@@ -331,6 +359,9 @@ namespace XMLWebApiCore.Migrations
                 name: "InstrumentComponents");
 
             migrationBuilder.DropTable(
+                name: "IntermediateElements");
+
+            migrationBuilder.DropTable(
                 name: "Nozzles");
 
             migrationBuilder.DropTable(
@@ -343,10 +374,10 @@ namespace XMLWebApiCore.Migrations
                 name: "ProcessInstruments");
 
             migrationBuilder.DropTable(
-                name: "ProcessLines");
+                name: "SignalLines");
 
             migrationBuilder.DropTable(
-                name: "SignalLines");
+                name: "ProcessLines");
 
             migrationBuilder.DropTable(
                 name: "Equipments");

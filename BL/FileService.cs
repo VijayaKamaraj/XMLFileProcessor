@@ -5,7 +5,6 @@ using System.Xml.Serialization;
 using XMLWebApiCore.Models.Classes;
 using XMLWebApiCore.Models.DBClasses;
 
-
 namespace XMLWebApiCore.BL
 {
     public class FileService : IFileService
@@ -14,12 +13,14 @@ namespace XMLWebApiCore.BL
         Dictionary<string, List<string>> graph = new Dictionary<string, List<string>>();
         PlantModel plantModel = new PlantModel();
         FileServiceContext _context;
-
         public FileService(FileServiceContext context) => _context = context;
+
+        /// <summary>
+        /// ProcessXMLFile
+        /// </summary>
+        /// <param name="path"></param>
         public PlantModel ProcessXMLFile(string path)
         {
-
-
             using (XmlTextReader reader = new XmlTextReader(path))
             {
                 if (reader.Read())
@@ -27,38 +28,43 @@ namespace XMLWebApiCore.BL
                     XmlSerializer serializer = new XmlSerializer(typeof(PlantModel));
                     plantModel = (PlantModel)serializer.Deserialize(reader);
                 }
-
             }
-
-
             return plantModel;
         }
 
+        /// <summary>
+        /// Validate_XML
+        /// </summary>
+        /// <param name="path"></param>
         public bool Validate_XML(string path)
         {
             bool validationErrors = false;
             XmlSchemaSet schema = new XmlSchemaSet();
-
             schema.Add("", folderPath + "\\ProteusSchema_3.3.3.xsd");
             XDocument document = XDocument.Load(path);
             document.Validate(schema, (o, validate) =>
             {
                 validationErrors = true;
             });
-
             return validationErrors;
         }
 
 
-        public bool CheckFileType(string fileName)
+        /// <summary>
+        /// CheckFileType
+        /// </summary>
+        /// <param name="path"></param>
+        public bool CheckFileType(string path)
         {
-            string path = folderPath + "\\" + fileName;
-            bool result = fileName.EndsWith(".xml") ? (Directory.Exists(folderPath) ?
-                            (File.Exists(path) ? true : false) : false) : false;
-
+            bool result = path.EndsWith(".xml") ? (File.Exists(path) ? true : false) : false;
             return result;
         }
 
+
+        /// <summary>
+        /// AddXmlFileDetails
+        /// </summary>
+        /// <param name="plantModel"></param>
         public bool AddXmlFileDetails(PlantModel plantModel)
         {
             if (plantModel.Drawing != null)
@@ -147,11 +153,21 @@ namespace XMLWebApiCore.BL
                         }
                     }
                 }
+
+                var sourceTargetList = CollectSourceTargetLists(plantModel);
+                FindProcessLines(sourceTargetList, drawing);
+
             }
 
             return true;
         }
 
+
+        /// <summary>
+        /// AddPipingNetworkSegment
+        /// </summary>
+        /// <param name="pipingNetworkSystem"></param>
+        /// <param name="pipingSegment"></param>
         private void AddPipingNetworkSegment(PipingNetworkSystemDB pipingNetworkSystem, PipingNetworkSegment pipingSegment)
         {
             PipingNetworkSegmentDB pipingNetworkSegment = new PipingNetworkSegmentDB();
@@ -168,6 +184,11 @@ namespace XMLWebApiCore.BL
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// AddPipingNetworkSystem
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="pipingSystem"></param>
         private PipingNetworkSystemDB AddPipingNetworkSystem(DrawingDB drawing, PipingNetworkSystem pipingSystem)
         {
             PipingNetworkSystemDB pipingNetworkSystem = new PipingNetworkSystemDB();
@@ -184,6 +205,11 @@ namespace XMLWebApiCore.BL
             return pipingNetworkSystem;
         }
 
+        /// <summary>
+        /// AddSignalLine
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="signalLine"></param>
         private void AddSignalLine(DrawingDB drawing, SignalLine signalLine)
         {
             SignalLineDB signalLines = new SignalLineDB();
@@ -201,6 +227,11 @@ namespace XMLWebApiCore.BL
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// AddProcessInstrument
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="processInstrument"></param>
         private void AddProcessInstrument(DrawingDB drawing, ProcessInstrument? processInstrument)
         {
             ProcessInstrumentDB instrumentProcess = new ProcessInstrumentDB();
@@ -220,6 +251,12 @@ namespace XMLWebApiCore.BL
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// AddPipeConnector
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="pipeConnector"></param>
+        /// <param name="tagName"></param>
         private void AddPipeConnector(DrawingDB drawing, PipeConnectorSymbol? pipeConnector, string? tagName)
         {
             PipeConnectorSymbolDB pipeConnectorSymbol = new PipeConnectorSymbolDB();
@@ -240,6 +277,10 @@ namespace XMLWebApiCore.BL
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// AddDrawingDetail
+        /// </summary>
+        /// <param name="plantModel"></param>
         private DrawingDB AddDrawingDetail(PlantModel plantModel)
         {
             DrawingDB drawing = new DrawingDB();
@@ -254,6 +295,11 @@ namespace XMLWebApiCore.BL
             return drawing;
         }
 
+        /// <summary>
+        /// AddNozzles
+        /// </summary>
+        /// <param name="equipments"></param>
+        /// <param name="nozzle"></param>
         private void AddNozzles(EquipmentDB equipments, Nozzle nozzle)
         {
             NozzleDB nozzles = new NozzleDB();
@@ -267,10 +313,16 @@ namespace XMLWebApiCore.BL
             nozzles.MaxY = nozzle.Extent.Max.Y;
             nozzles.MinX = nozzle.Extent.Min.X;
             nozzles.MinY = nozzle.Extent.Min.Y;
+            nozzles.PersistentId = nozzle.PersistentID.Identifier;
             _context.Nozzles.Add(nozzles);
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// AddEquipment
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="equipment"></param>
         private EquipmentDB AddEquipment(DrawingDB drawing, Equipment equipment)
         {
             EquipmentDB equipments = new EquipmentDB();
@@ -289,7 +341,12 @@ namespace XMLWebApiCore.BL
             return equipments;
         }
 
-        private void AddInstrumentComponent(DrawingDB drawing, Models.Classes.InstrumentComponent instrumentComponent)
+        /// <summary>
+        /// AddInstrumentComponent
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="instrumentComponent"></param>
+        private void AddInstrumentComponent(DrawingDB drawing, InstrumentComponent instrumentComponent)
         {
             InstrumentComponentDB instrumentComponents = new InstrumentComponentDB();
             instrumentComponents.DrawingDBId = drawing.Id;
@@ -308,6 +365,11 @@ namespace XMLWebApiCore.BL
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// CheckRevisionNumber
+        /// </summary>
+        /// <param name="revision"></param>
+        /// <param name="name"></param>
         public bool CheckRevisionNumber(string revision, string name)
         {
             bool result = false;
@@ -319,6 +381,10 @@ namespace XMLWebApiCore.BL
             return result;
         }
 
+        /// <summary>
+        /// CollectSourceTargetLists
+        /// </summary>
+        /// <param name="plantModel"></param>
         public List<SourceTargetList> CollectSourceTargetLists(PlantModel plantModel)
         {
             List<SourceTargetList> sourceTargetLists = new List<SourceTargetList>();
@@ -389,7 +455,9 @@ namespace XMLWebApiCore.BL
             return sourceTargetLists;
         }
 
-
+        /// <summary>
+        /// CollectNozzleDetails
+        /// </summary>
         private List<NozzleSymbol> CollectNozzleDetails()
         {
 
@@ -430,7 +498,12 @@ namespace XMLWebApiCore.BL
             return pipeConnectorDetails;
         }
 
-        public void FindProcessLines(List<SourceTargetList> sourceTargetLists)
+        /// <summary>
+        /// FindProcessLines
+        /// </summary>
+        /// <param name="sourceTargetLists"></param>
+        /// <param name="drawing"></param>
+        public void FindProcessLines(List<SourceTargetList> sourceTargetLists, DrawingDB drawing)
         {
             var sourceList = sourceTargetLists.Where(x => x.IsSource == true).ToList();
             var targetList = sourceTargetLists.Where(x => x.IsDestination == true).ToList();
@@ -440,18 +513,25 @@ namespace XMLWebApiCore.BL
                 {
                     foreach (var destination in targetList)
                     {
-                        findpaths(graph, source.FromId, destination.ToId);
+                        Findpaths(graph, source.FromId, destination.ToId, drawing);
                     }
                 }
             }
 
         }
 
-        private void findpaths(Dictionary<string, List<string>> graph, string src, string dst)
+        /// <summary>
+        /// Findpaths
+        /// </summary>
+        /// <param name="graph"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="drawing"></param>
+        private void Findpaths(Dictionary<string, List<string>> graph, string source, string destination, DrawingDB drawing)
         {
             Queue<List<string>> queue = new Queue<List<string>>();
             List<string> path = new List<string>();
-            path.Add(src);
+            path.Add(source);
             queue.Enqueue(path);
             while (queue.Count != 0)
             {
@@ -459,9 +539,9 @@ namespace XMLWebApiCore.BL
                 string last = path[path.Count - 1];
 
 
-                if (last == dst)
+                if (last == destination)
                 {
-                    PrintPath(path);
+                    PrintPath(path, drawing);
                 }
 
 
@@ -483,18 +563,27 @@ namespace XMLWebApiCore.BL
             }
         }
 
-
-        private bool IsNotVisited(string x, List<string> path)
+        /// <summary>
+        /// IsNotVisited
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="path"></param>
+        private bool IsNotVisited(string element, List<string> path)
         {
             var result = false;
             int size = path.Count;
             for (int i = 0; i < size; i++)
-                if (path[i] != x)
+                if (path[i] != element)
                     result = true;
             return result;
         }
 
-        private void PrintPath(List<string> path)
+        /// <summary>
+        /// PrintPath
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="drawing"></param>
+        private void PrintPath(List<string> path, DrawingDB drawing)
         {
             string first = path.First();
             string last = path.Last();
@@ -503,27 +592,65 @@ namespace XMLWebApiCore.BL
             IntermediateSymbol sourceSymbol = GetIntermediateDetails(first, out IntermediateSymbol source);
             processLine.Source = sourceSymbol.PersistentId;
             processLine.SourceTagName = sourceSymbol.ComponentClass;
+            bool isSourceTagAvailable = _context.PipeConnectorSymbols.Any(x => x.PersistentId == sourceSymbol.PersistentId);
+            if (isSourceTagAvailable == true)
+            {
+                sourceSymbol.TagName = _context.PipeConnectorSymbols.FirstOrDefault(x => x.PersistentId == sourceSymbol.PersistentId).TagName;
+
+            }
             processLine.SourceEquipmentTagName = sourceSymbol.TagName;
 
             IntermediateSymbol targetSymbol = GetIntermediateDetails(last, out IntermediateSymbol target);
             processLine.Target = targetSymbol.PersistentId;
-            bool isTagAvailable = _context.PipeConnectorSymbols.Any(x => x.PersistentId == targetSymbol.PersistentId);
-            if (isTagAvailable == true)
+            bool isTargetTagAvailable = _context.PipeConnectorSymbols.Any(x => x.PersistentId == targetSymbol.PersistentId);
+            if (isTargetTagAvailable == true)
             {
                 targetSymbol.TagName = _context.PipeConnectorSymbols.FirstOrDefault(x => x.PersistentId == targetSymbol.PersistentId).TagName;
-                // targetSymbol.TagName = connectorTagName;
-            }
 
+            }
             processLine.TargetTagName = targetSymbol.ComponentClass;
             processLine.TargetEquipmentTagName = targetSymbol.TagName;
+            bool isSourceAndDestinationAvailable = _context.ProcessLines.Any(x => x.Source == first && x.Target == last);
+            int processLineCount = 0;
+            if (isSourceAndDestinationAvailable)
+            {
+                var processLineList = _context.ProcessLines.Where(x => x.Source == first && x.Target == last).ToList();
+                int processId = processLineList.Max(x => x.Id);
+                var name = processLineList.First(x => x.Id == processId).ProcessLineName;
+                string pnameCount = name.Substring(name.LastIndexOf("_") + 1);
+                int nameCount = int.Parse(pnameCount) + 1;
+                processLine.ProcessLineName = sourceSymbol.PersistentId + "_" + targetSymbol.PersistentId + "_" + nameCount;
+            }
+            else
+            {
+                processLineCount += 1;
+                processLine.ProcessLineName = sourceSymbol.PersistentId + "_" + targetSymbol.PersistentId + "_" + processLineCount;
+            }
+            processLine.DrawingDBId = drawing.Id;
             _context.ProcessLines.Add(processLine);
             _context.SaveChanges();
 
+            foreach (var intermediateElement in path)
+            {
+                if (intermediateElement != first && intermediateElement != last)
+                {
+                    IntermediateSymbol intermediateSymbol = GetIntermediateDetails(intermediateElement, out IntermediateSymbol element);
+                    IntermediateElement intermediate = new IntermediateElement();
+                    intermediate.ProcessLineId = processLine.Id;
+                    intermediate.intermediateElement = intermediateSymbol.PersistentId;
+                    intermediate.ComponentClass = intermediateSymbol.ComponentClass;
+                    _context.IntermediateElements.Add(intermediate);
+                    _context.SaveChanges();
+
+                }
+            }
+
         }
 
-
+        /// <summary>
+        /// GetIntermediateDetails
+        /// </summary>
         private IntermediateSymbol GetIntermediateDetails(string Id, out IntermediateSymbol intermediateSymbol)
-
         {
             bool result = false;
             var intermediateSymbols = CollectIntermediateSymbols();
@@ -583,6 +710,9 @@ namespace XMLWebApiCore.BL
 
         }
 
+        /// <summary>
+        /// CollectIntermediateSymbols
+        /// </summary>
         private CollectedSymbol CollectIntermediateSymbols()
         {
             CollectedSymbol symbol = new CollectedSymbol();
@@ -605,7 +735,6 @@ namespace XMLWebApiCore.BL
              .Select(x => new PropertyBreakDetail { ID = x.ID, ComponentClass = x.ComponentClass, PersistentId = x.PersistentID.Identifier, Extent = x.Extent }).ToList();
             return symbol;
         }
-
 
     }
 }

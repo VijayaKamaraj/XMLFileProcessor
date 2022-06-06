@@ -11,7 +11,7 @@ using XMLWebApiCore.Models.DBClasses;
 namespace XMLWebApiCore.Migrations
 {
     [DbContext(typeof(FileServiceContext))]
-    [Migration("20220603055108_xmlFileProcessor")]
+    [Migration("20220606090847_xmlFileProcessor")]
     partial class xmlFileProcessor
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,6 +150,30 @@ namespace XMLWebApiCore.Migrations
                     b.ToTable("InstrumentComponents");
                 });
 
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.IntermediateElement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ComponentClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProcessLineId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("intermediateElement")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessLineId");
+
+                    b.ToTable("IntermediateElements");
+                });
+
             modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.NozzleDB", b =>
                 {
                     b.Property<int>("Id")
@@ -184,6 +208,9 @@ namespace XMLWebApiCore.Migrations
 
                     b.Property<double>("MinY")
                         .HasColumnType("float");
+
+                    b.Property<string>("PersistentId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TagName")
                         .HasColumnType("nvarchar(max)");
@@ -392,6 +419,9 @@ namespace XMLWebApiCore.Migrations
                     b.Property<int>("DrawingDBId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProcessLineName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Source")
                         .HasColumnType("nvarchar(max)");
 
@@ -476,6 +506,15 @@ namespace XMLWebApiCore.Migrations
                     b.HasOne("XMLWebApiCore.Models.DBClasses.DrawingDB", null)
                         .WithMany("InstrumentComponents")
                         .HasForeignKey("DrawingDBId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.IntermediateElement", b =>
+                {
+                    b.HasOne("XMLWebApiCore.Models.DBClasses.ProcessLine", null)
+                        .WithMany("IntermediateElements")
+                        .HasForeignKey("ProcessLineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -568,6 +607,11 @@ namespace XMLWebApiCore.Migrations
             modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PipingNetworkSystemDB", b =>
                 {
                     b.Navigation("PipingNetworkSegments");
+                });
+
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.ProcessLine", b =>
+                {
+                    b.Navigation("IntermediateElements");
                 });
 #pragma warning restore 612, 618
         }

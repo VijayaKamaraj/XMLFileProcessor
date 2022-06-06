@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Web;
+﻿using Microsoft.EntityFrameworkCore;
 namespace XMLWebApiCore.Models.DBClasses
 {
     public class FileServiceContext : DbContext
@@ -29,6 +25,8 @@ namespace XMLWebApiCore.Models.DBClasses
         public DbSet<SignalLineDB> SignalLines { get; set; }
 
         public DbSet<ProcessLine> ProcessLines { get; set; }
+
+        public DbSet<IntermediateElement> IntermediateElements { get; set; }
 
     }
 }

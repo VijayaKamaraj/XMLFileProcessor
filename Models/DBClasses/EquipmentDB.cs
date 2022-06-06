@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using Newtonsoft.Json;
 namespace XMLWebApiCore.Models.DBClasses
 {
     public class EquipmentDB
     {
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string? TagName { get; set; }
@@ -26,10 +27,8 @@ namespace XMLWebApiCore.Models.DBClasses
 
         public double LocationY { get; set; }
 
-
         [ForeignKey("DrawingDB")]
         public int DrawingDBId { get; set; }
-
         public List<NozzleDB>? Nozzles { get; set; }
 
     }

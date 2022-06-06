@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-
+using Newtonsoft.Json;
 namespace XMLWebApiCore.Models.DBClasses
 {
     public class DrawingDB
     {
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string? Name { get; set; }
@@ -18,8 +19,6 @@ namespace XMLWebApiCore.Models.DBClasses
         public double MaxX { get; set; }
 
         public double MaxY { get; set; }
-
-
         public List<EquipmentDB>? Equipments { get; set; }
 
         public List<InstrumentComponentDB>? InstrumentComponents { get; set; }

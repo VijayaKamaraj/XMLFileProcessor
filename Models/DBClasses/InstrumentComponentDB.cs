@@ -7,6 +7,7 @@ namespace XMLWebApiCore.Models.DBClasses
     public class InstrumentComponentDB
     {
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string? TagName { get; set; }
@@ -35,7 +36,6 @@ namespace XMLWebApiCore.Models.DBClasses
 
         [ForeignKey("DrawingDB")]
         public int DrawingDBId { get; set; }
-
 
     }
 }

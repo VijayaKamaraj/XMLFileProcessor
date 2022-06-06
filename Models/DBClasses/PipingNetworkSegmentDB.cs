@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
@@ -5,6 +6,8 @@ namespace XMLWebApiCore.Models.DBClasses
 {
     public class PipingNetworkSegmentDB
     {
+        [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string? TagName { get; set; }

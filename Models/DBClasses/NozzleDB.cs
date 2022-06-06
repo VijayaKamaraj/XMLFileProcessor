@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
-
+using Newtonsoft.Json;
 namespace XMLWebApiCore.Models.DBClasses
 {
     public class NozzleDB
     {
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string? TagName { get; set; }
@@ -17,6 +14,8 @@ namespace XMLWebApiCore.Models.DBClasses
         public string? ComponentClass { get; set; }
 
         public string? ComponentName { get; set; }
+
+        public string? PersistentId { get; set; }
 
         public double MinX { get; set; }
 
@@ -31,9 +30,8 @@ namespace XMLWebApiCore.Models.DBClasses
         public double LocationY { get; set; }
 
         [ForeignKey("EquipmentDB")]
+        [JsonIgnore]
         public int EquipmentDBId { get; set; }
-
-
 
     }
 }

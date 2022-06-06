@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XMLWebApiCore.Models.Classes
+﻿namespace XMLWebApiCore.Models.Classes
 {
     public class ActuatingFunction
     {
-        private Association[] associationField;
+        private Association[]? associationField;
 
-        private GenericAttributes genericAttributesField;
+        private GenericAttributes? genericAttributesField;
 
-        private string idField;
+        private string? idField;
 
         private string componentClassField;
 
@@ -57,7 +51,7 @@ namespace XMLWebApiCore.Models.Classes
             }
         }
 
-   
+
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ComponentClass
         {
@@ -71,7 +65,7 @@ namespace XMLWebApiCore.Models.Classes
             }
         }
 
-          [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ComponentClassURI
         {
             get
