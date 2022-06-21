@@ -11,6 +11,8 @@ namespace XMLWebApiCore.Models.DBClasses
         public int Id { get; set; }
         public string? intermediateElement { get; set; }
         public string? ComponentClass { get; set; }
+        public string? ComponentName { get; set; }
+        public string? TagName { get; set; }
 
         [ForeignKey("ProcessLine")]
 

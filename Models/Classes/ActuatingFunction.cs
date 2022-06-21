@@ -8,9 +8,9 @@
 
         private string? idField;
 
-        private string componentClassField;
+        private string? componentClassField;
 
-        private string componentClassURIField;
+        private string? componentClassURIField;
 
         [System.Xml.Serialization.XmlElementAttribute("Association")]
         public Association[] Association

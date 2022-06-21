@@ -116,6 +116,35 @@ namespace XMLWebApiCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PipingComponents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PersistentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ComponentClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ComponentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MinX = table.Column<double>(type: "float", nullable: false),
+                    MinY = table.Column<double>(type: "float", nullable: false),
+                    MaxX = table.Column<double>(type: "float", nullable: false),
+                    MaxY = table.Column<double>(type: "float", nullable: false),
+                    LocationX = table.Column<double>(type: "float", nullable: false),
+                    LocationY = table.Column<double>(type: "float", nullable: false),
+                    DrawingDBId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PipingComponents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PipingComponents_Drawings_DrawingDBId",
+                        column: x => x.DrawingDBId,
+                        principalTable: "Drawings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PipingNetworkSystems",
                 columns: table => new
                 {
@@ -177,13 +206,13 @@ namespace XMLWebApiCore.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ProcessLineName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Source = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SourceTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SourceEquipmentTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Target = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TargetTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TargetEquipmentTagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProcessLineName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DrawingDBId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -191,6 +220,35 @@ namespace XMLWebApiCore.Migrations
                     table.PrimaryKey("PK_ProcessLines", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ProcessLines_Drawings_DrawingDBId",
+                        column: x => x.DrawingDBId,
+                        principalTable: "Drawings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropertyBreaks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PersistentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ComponentClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ComponentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MinX = table.Column<double>(type: "float", nullable: false),
+                    MinY = table.Column<double>(type: "float", nullable: false),
+                    MaxX = table.Column<double>(type: "float", nullable: false),
+                    MaxY = table.Column<double>(type: "float", nullable: false),
+                    LocationX = table.Column<double>(type: "float", nullable: false),
+                    LocationY = table.Column<double>(type: "float", nullable: false),
+                    DrawingDBId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropertyBreaks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropertyBreaks_Drawings_DrawingDBId",
                         column: x => x.DrawingDBId,
                         principalTable: "Drawings",
                         principalColumn: "Id",
@@ -289,6 +347,8 @@ namespace XMLWebApiCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     intermediateElement = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ComponentClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ComponentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TagName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProcessLineId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -328,6 +388,11 @@ namespace XMLWebApiCore.Migrations
                 column: "DrawingDBId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PipingComponents_DrawingDBId",
+                table: "PipingComponents",
+                column: "DrawingDBId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PipingNetworkSegments_PipingNetworkSystemDBId",
                 table: "PipingNetworkSegments",
                 column: "PipingNetworkSystemDBId");
@@ -345,6 +410,11 @@ namespace XMLWebApiCore.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProcessLines_DrawingDBId",
                 table: "ProcessLines",
+                column: "DrawingDBId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropertyBreaks_DrawingDBId",
+                table: "PropertyBreaks",
                 column: "DrawingDBId");
 
             migrationBuilder.CreateIndex(
@@ -368,10 +438,16 @@ namespace XMLWebApiCore.Migrations
                 name: "PipeConnectorSymbols");
 
             migrationBuilder.DropTable(
+                name: "PipingComponents");
+
+            migrationBuilder.DropTable(
                 name: "PipingNetworkSegments");
 
             migrationBuilder.DropTable(
                 name: "ProcessInstruments");
+
+            migrationBuilder.DropTable(
+                name: "PropertyBreaks");
 
             migrationBuilder.DropTable(
                 name: "SignalLines");

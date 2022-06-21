@@ -8,17 +8,17 @@ namespace XMLWebApiCore.Models.Classes
 {
     public class ActuatingSystem
     {
-        private Association associationField;
+        private Association? associationField;
 
-        private GenericAttributes genericAttributesField;
+        private GenericAttributes? genericAttributesField;
 
-        private ActuatingSystemComponent[] actuatingSystemComponentField;
+        private ActuatingSystemComponent[]? actuatingSystemComponentField;
 
-        private string idField;
+        private string? idField;
 
-        private string componentClassField;
+        private string? componentClassField;
 
-        private string componentClassURIField;
+        private string? componentClassURIField;
 
         public Association Association
         {
@@ -59,7 +59,7 @@ namespace XMLWebApiCore.Models.Classes
             }
         }
 
-   
+
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ID
         {

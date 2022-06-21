@@ -32,6 +32,10 @@ namespace XMLWebApiCore.Models.DBClasses
         public List<PipingNetworkSystemDB>? PipingNetworkSystems { get; set; }
 
         public List<ProcessLine>? ProcessLines { get; set; }
+
+        public List<PipingComponentDB>? PipingComponents { get; set; }
+
+        public List<PropertyBreakDB>? PropertyBreaks { get; set; }
     }
 }
 

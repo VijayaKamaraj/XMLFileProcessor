@@ -89,9 +89,7 @@ namespace XMLWebApiCore.BL
                             AddNozzles(equipments, nozzle);
 
                         }
-
                     }
-
                 }
 
                 var pipeConnectorDetails = (plantModel.PipingNetworkSystem).Where(x => x.PipingNetworkSegment != null).SelectMany(x => x.PipingNetworkSegment).Where(y => y.PipeConnectorSymbol != null).Select(x => x.PipeConnectorSymbol).ToList();
@@ -121,6 +119,7 @@ namespace XMLWebApiCore.BL
 
                     }
                 }
+
                 var processInstrumentDetails = (plantModel.PipingNetworkSystem).Where(x => x.PipingNetworkSegment != null)
                 .SelectMany(x => x.PipingNetworkSegment).Where(y => y.ProcessInstrument != null)
                 .Select(x => x.ProcessInstrument).ToList();
@@ -130,6 +129,28 @@ namespace XMLWebApiCore.BL
                     foreach (var processInstrument in processInstrumentDetails)
                     {
                         AddProcessInstrument(drawing, processInstrument);
+                    }
+                }
+
+                var pipingComponentDetails = (plantModel.PipingNetworkSystem).Where(x => x.PipingNetworkSegment != null)
+                 .SelectMany(x => x.PipingNetworkSegment).Where(y => y.PipingComponent != null)
+                 .SelectMany(x => x.PipingComponent).ToList();
+
+                if (pipingComponentDetails != null)
+                {
+                    foreach (var pipingComponent in pipingComponentDetails)
+                    {
+                        AddPipingComponent(drawing, pipingComponent);
+                    }
+                }
+
+                var propertyBreakDetails = (plantModel.PipingNetworkSystem).Where(x => x.PropertyBreak != null)
+               .SelectMany(x => x.PropertyBreak).ToList();
+                if (propertyBreakDetails != null)
+                {
+                    foreach (var PropertyBreak in propertyBreakDetails)
+                    {
+                        AddPropertyBreak(drawing, PropertyBreak);
                     }
                 }
 
@@ -248,6 +269,90 @@ namespace XMLWebApiCore.BL
             instrumentProcess.LocationX = processInstrument.Position.Location.X;
             instrumentProcess.LocationY = processInstrument.Position.Location.Y;
             _context.ProcessInstruments.Add(instrumentProcess);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// AddProcessInstrument
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="pipingComponent"></param>
+        private void AddPipingComponent(DrawingDB drawing, PipingComponent? pipingComponent)
+        {
+            PipingComponentDB pipingComponentDB = new PipingComponentDB();
+            pipingComponentDB.DrawingDBId = drawing.Id;
+            pipingComponentDB.ComponentClass = pipingComponent.ComponentClass;
+            pipingComponentDB.ComponentName = pipingComponent.ComponentName;
+            //pipingComponentDB.TagName = pipingComponent.TagName == null ? pipingComponent.ComponentClass + "_" + pipingComponent.ComponentName : pipingComponent.TagName;
+            if (pipingComponent.TagName == null)
+            {
+                int count = 0;
+                if (_context.PipingComponents.Any(x => x.ComponentClass == pipingComponent.ComponentClass && x.ComponentName == pipingComponent.ComponentName))
+                {
+                    var pipingList = _context.PipingComponents.Where(x => x.ComponentClass == pipingComponent.ComponentClass && x.ComponentName == pipingComponent.ComponentName).ToList();
+                    int pipingId = pipingList.Max(x => x.Id);
+                    var tagName = pipingList.First(x => x.Id == pipingId).TagName;
+                    string tagNameCount = tagName.Substring(tagName.LastIndexOf("_") + 1);
+                    int tagCount = int.Parse(tagNameCount) + 1;
+                    pipingComponentDB.TagName = pipingComponent.ComponentClass + "_" + pipingComponent.ComponentName + "_" + tagCount;
+                }
+                else
+                {
+                    count += 1;
+                    pipingComponentDB.TagName = pipingComponent.ComponentClass + "_" + pipingComponent.ComponentName + "_" + count;
+                }
+            }
+            else
+            {
+                pipingComponentDB.TagName = pipingComponent.TagName;
+            }
+            pipingComponentDB.PersistentId = pipingComponent.PersistentID.Identifier;
+            pipingComponentDB.MaxX = pipingComponent.Extent.Max.X;
+            pipingComponentDB.MaxY = pipingComponent.Extent.Max.Y;
+            pipingComponentDB.MinX = pipingComponent.Extent.Min.X;
+            pipingComponentDB.MinY = pipingComponent.Extent.Min.Y;
+            pipingComponentDB.LocationX = pipingComponent.Position.Location.X;
+            pipingComponentDB.LocationY = pipingComponent.Position.Location.Y;
+            _context.PipingComponents.Add(pipingComponentDB);
+            _context.SaveChanges();
+
+        }
+
+        /// <summary>
+        /// AddProcessInstrument
+        /// </summary>
+        /// <param name="drawing"></param>
+        /// <param name="propertyBreak"></param>
+        private void AddPropertyBreak(DrawingDB drawing, PropertyBreak? propertyBreak)
+        {
+            PropertyBreakDB propertyBreakDB = new PropertyBreakDB();
+            propertyBreakDB.DrawingDBId = drawing.Id;
+            propertyBreakDB.ComponentClass = propertyBreak.ComponentClass;
+            propertyBreakDB.ComponentName = propertyBreak.ComponentName;
+            //propertyBreakDB.TagName = propertyBreak.ComponentClass + "_" + propertyBreak.ComponentName;
+            int count = 0;
+            if (_context.PropertyBreaks.Any(x => x.ComponentClass == propertyBreak.ComponentClass && x.ComponentName == propertyBreak.ComponentName))
+            {
+                var propertyBreakList = _context.PropertyBreaks.Where(x => x.ComponentClass == propertyBreak.ComponentClass && x.ComponentName == propertyBreak.ComponentName).ToList();
+                int propertyBreakId = propertyBreakList.Max(x => x.Id);
+                var tagName = propertyBreakList.First(x => x.Id == propertyBreakId).TagName;
+                string tagNameCount = tagName.Substring(tagName.LastIndexOf("_") + 1);
+                int tagCount = int.Parse(tagNameCount) + 1;
+                propertyBreakDB.TagName = propertyBreak.ComponentClass + "_" + propertyBreak.ComponentName + "_" + tagCount;
+            }
+            else
+            {
+                count += 1;
+                propertyBreakDB.TagName = propertyBreak.ComponentClass + "_" + propertyBreak.ComponentName + "_" + count;
+            }
+            propertyBreakDB.PersistentId = propertyBreak.PersistentID.Identifier;
+            propertyBreakDB.MaxX = propertyBreak.Extent.Max.X;
+            propertyBreakDB.MaxY = propertyBreak.Extent.Max.Y;
+            propertyBreakDB.MinX = propertyBreak.Extent.Min.X;
+            propertyBreakDB.MinY = propertyBreak.Extent.Min.Y;
+            propertyBreakDB.LocationX = propertyBreak.Position.Location.X;
+            propertyBreakDB.LocationY = propertyBreak.Position.Location.Y;
+            _context.PropertyBreaks.Add(propertyBreakDB);
             _context.SaveChanges();
         }
 
@@ -595,7 +700,7 @@ namespace XMLWebApiCore.BL
             bool isSourceTagAvailable = _context.PipeConnectorSymbols.Any(x => x.PersistentId == sourceSymbol.PersistentId);
             if (isSourceTagAvailable == true)
             {
-                sourceSymbol.TagName = _context.PipeConnectorSymbols.FirstOrDefault(x => x.PersistentId == sourceSymbol.PersistentId).TagName;
+                sourceSymbol.TagName = _context.PipeConnectorSymbols.First(x => x.PersistentId == sourceSymbol.PersistentId).TagName;
 
             }
             processLine.SourceEquipmentTagName = sourceSymbol.TagName;
@@ -605,7 +710,7 @@ namespace XMLWebApiCore.BL
             bool isTargetTagAvailable = _context.PipeConnectorSymbols.Any(x => x.PersistentId == targetSymbol.PersistentId);
             if (isTargetTagAvailable == true)
             {
-                targetSymbol.TagName = _context.PipeConnectorSymbols.FirstOrDefault(x => x.PersistentId == targetSymbol.PersistentId).TagName;
+                targetSymbol.TagName = _context.PipeConnectorSymbols.First(x => x.PersistentId == targetSymbol.PersistentId).TagName;
 
             }
             processLine.TargetTagName = targetSymbol.ComponentClass;
@@ -617,8 +722,8 @@ namespace XMLWebApiCore.BL
                 var processLineList = _context.ProcessLines.Where(x => x.Source == first && x.Target == last).ToList();
                 int processId = processLineList.Max(x => x.Id);
                 var name = processLineList.First(x => x.Id == processId).ProcessLineName;
-                string pnameCount = name.Substring(name.LastIndexOf("_") + 1);
-                int nameCount = int.Parse(pnameCount) + 1;
+                string processLineNameCount = name.Substring(name.LastIndexOf("_") + 1);
+                int nameCount = int.Parse(processLineNameCount) + 1;
                 processLine.ProcessLineName = sourceSymbol.PersistentId + "_" + targetSymbol.PersistentId + "_" + nameCount;
             }
             else
@@ -639,6 +744,21 @@ namespace XMLWebApiCore.BL
                     intermediate.ProcessLineId = processLine.Id;
                     intermediate.intermediateElement = intermediateSymbol.PersistentId;
                     intermediate.ComponentClass = intermediateSymbol.ComponentClass;
+                    if (_context.PipingComponents.Any(x => x.PersistentId == intermediateSymbol.PersistentId))
+                    {
+                        intermediate.TagName = _context.PipingComponents.First(x => x.PersistentId == intermediateSymbol.PersistentId).TagName;
+                    }
+                    if (_context.PropertyBreaks.Any(x => x.PersistentId == intermediateSymbol.PersistentId))
+                    {
+                        intermediate.TagName = _context.PropertyBreaks.First(x => x.PersistentId == intermediateSymbol.PersistentId).TagName;
+                    }
+
+                    if (_context.ProcessInstruments.Any(x => x.PersistentId == intermediateSymbol.PersistentId))
+                    {
+                        intermediate.TagName = _context.ProcessInstruments.First(x => x.PersistentId == intermediateSymbol.PersistentId).TagName;
+                    }
+
+                    intermediate.ComponentName = intermediateSymbol.ComponentName;
                     _context.IntermediateElements.Add(intermediate);
                     _context.SaveChanges();
 
@@ -664,6 +784,9 @@ namespace XMLWebApiCore.BL
                 intermediateSymbol.ID = intermediateSymbols.pipingComponentDetails.First(x => x.PersistentId == Id).ID;
                 intermediateSymbol.PersistentId = intermediateSymbols.pipingComponentDetails.First(x => x.PersistentId == Id).PersistentId;
                 intermediateSymbol.ComponentClass = intermediateSymbols.pipingComponentDetails.First(x => x.PersistentId == Id).ComponentClass;
+                intermediateSymbol.ComponentName = intermediateSymbols.pipingComponentDetails.First(x => x.PersistentId == Id).ComponentName;
+                intermediateSymbol.TagName = intermediateSymbols.pipingComponentDetails.First(x => x.PersistentId == Id).TagName;
+
 
             }
 
@@ -673,6 +796,8 @@ namespace XMLWebApiCore.BL
                 intermediateSymbol.ID = intermediateSymbols.processInstrumentDetails.First(x => x.PersistentId == Id).ID;
                 intermediateSymbol.PersistentId = intermediateSymbols.processInstrumentDetails.First(x => x.PersistentId == Id).PersistentId;
                 intermediateSymbol.ComponentClass = intermediateSymbols.processInstrumentDetails.First(x => x.PersistentId == Id).ComponentClass;
+                intermediateSymbol.ComponentName = intermediateSymbols.processInstrumentDetails.First(x => x.PersistentId == Id).ComponentName;
+                intermediateSymbol.TagName = intermediateSymbols.processInstrumentDetails.First(x => x.PersistentId == Id).TagName;
 
             }
 
@@ -683,6 +808,7 @@ namespace XMLWebApiCore.BL
                 intermediateSymbol.ID = intermediateSymbols.propertyBreakDetails.First(x => x.PersistentId == Id).ID;
                 intermediateSymbol.PersistentId = intermediateSymbols.propertyBreakDetails.First(x => x.PersistentId == Id).PersistentId;
                 intermediateSymbol.ComponentClass = intermediateSymbols.propertyBreakDetails.First(x => x.PersistentId == Id).ComponentClass;
+                intermediateSymbol.ComponentName = intermediateSymbols.propertyBreakDetails.First(x => x.PersistentId == Id).ComponentName;
 
             }
 
@@ -693,8 +819,6 @@ namespace XMLWebApiCore.BL
                 intermediateSymbol.PersistentId = nozzleList.First(x => x.PersistentId == Id).PersistentId;
                 intermediateSymbol.ComponentClass = nozzleList.First(x => x.PersistentId == Id).TagName;
                 intermediateSymbol.TagName = nozzleList.First(x => x.PersistentId == Id).EquipmentTagName;
-
-
             }
 
             if (result == false && pipeConnectorDetails.Any(x => x.PersistentId == Id))
@@ -721,18 +845,19 @@ namespace XMLWebApiCore.BL
             var pipinComponentList = pipingNetworkSegmentList.Where(pip => pip.PipingComponent != null).ToList().SelectMany(p => p.PipingComponent).ToList();
             pipinComponentList.ForEach(piping =>
             {
-                pipingcomponentDetail.Add(new PipingComponentDetail { ID = piping.ID, PersistentId = piping.PersistentID.Identifier, ComponentClass = piping.ComponentClass });
+                pipingcomponentDetail.Add(new PipingComponentDetail { TagName = piping.TagName, ComponentClass = piping.ComponentClass, PersistentId = piping.PersistentID.Identifier, ComponentName = piping.ComponentName });
             });
+
             symbol.pipingComponentDetails = pipingcomponentDetail;
 
             symbol.processInstrumentDetails = (plantModel.PipingNetworkSystem).Where(x => x.PipingNetworkSegment != null)
                 .SelectMany(x => x.PipingNetworkSegment).Where(y => y.ProcessInstrument != null)
                 .Select(x => x.ProcessInstrument)
-                .Select(x => new ProcessInstrumentDetail { ID = x.ID, ComponentClass = x.ComponentClass, PersistentId = x.PersistentID.Identifier, Extent = x.Extent }).ToList();
+                .Select(x => new ProcessInstrumentDetail { TagName = x.TagName, ComponentClass = x.ComponentClass, PersistentId = x.PersistentID.Identifier, ComponentName = x.ComponentName }).ToList();
 
             symbol.propertyBreakDetails = (plantModel.PipingNetworkSystem).Where(x => x.PropertyBreak != null)
              .SelectMany(x => x.PropertyBreak)
-             .Select(x => new PropertyBreakDetail { ID = x.ID, ComponentClass = x.ComponentClass, PersistentId = x.PersistentID.Identifier, Extent = x.Extent }).ToList();
+             .Select(x => new PropertyBreakDetail { ComponentClass = x.ComponentClass, PersistentId = x.PersistentID.Identifier, ComponentName = x.ComponentName }).ToList();
             return symbol;
         }
 

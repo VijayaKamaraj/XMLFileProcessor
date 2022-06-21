@@ -8,10 +8,10 @@ namespace XMLWebApiCore.Models.Classes
 {
     public class ProcessInstrumentDetail
     {
-        public string ID { get; set; }
-        public string PersistentId { get; set; }
-        public Extent Extent { get; set; }
-
-        public string ComponentClass { get; set; }
+        public string? ID { get; set; }
+        public string? TagName { get; set; }
+        public string? PersistentId { get; set; }
+        public string? ComponentClass { get; set; }
+        public string? ComponentName { get; set; }
     }
 }

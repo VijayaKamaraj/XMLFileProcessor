@@ -28,5 +28,9 @@ namespace XMLWebApiCore.Models.DBClasses
 
         public DbSet<IntermediateElement> IntermediateElements { get; set; }
 
+        public DbSet<PropertyBreakDB> PropertyBreaks { get; set; }
+
+        public DbSet<PipingComponentDB> PipingComponents { get; set; }
+
     }
 }

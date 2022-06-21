@@ -159,8 +159,14 @@ namespace XMLWebApiCore.Migrations
                     b.Property<string>("ComponentClass")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ComponentName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProcessLineId")
                         .HasColumnType("int");
+
+                    b.Property<string>("TagName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("intermediateElement")
                         .HasColumnType("nvarchar(max)");
@@ -272,6 +278,54 @@ namespace XMLWebApiCore.Migrations
                     b.HasIndex("DrawingDBId");
 
                     b.ToTable("PipeConnectorSymbols");
+                });
+
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PipingComponentDB", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ComponentClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ComponentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DrawingDBId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("LocationX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("LocationY")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxY")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinY")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PersistentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TagName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DrawingDBId");
+
+                    b.ToTable("PipingComponents");
                 });
 
             modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PipingNetworkSegmentDB", b =>
@@ -445,6 +499,54 @@ namespace XMLWebApiCore.Migrations
                     b.ToTable("ProcessLines");
                 });
 
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PropertyBreakDB", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ComponentClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ComponentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DrawingDBId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("LocationX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("LocationY")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxY")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinY")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PersistentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TagName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DrawingDBId");
+
+                    b.ToTable("PropertyBreaks");
+                });
+
             modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.SignalLineDB", b =>
                 {
                     b.Property<int>("Id")
@@ -535,6 +637,15 @@ namespace XMLWebApiCore.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PipingComponentDB", b =>
+                {
+                    b.HasOne("XMLWebApiCore.Models.DBClasses.DrawingDB", null)
+                        .WithMany("PipingComponents")
+                        .HasForeignKey("DrawingDBId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PipingNetworkSegmentDB", b =>
                 {
                     b.HasOne("XMLWebApiCore.Models.DBClasses.PipingNetworkSystemDB", null)
@@ -571,6 +682,15 @@ namespace XMLWebApiCore.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.PropertyBreakDB", b =>
+                {
+                    b.HasOne("XMLWebApiCore.Models.DBClasses.DrawingDB", null)
+                        .WithMany("PropertyBreaks")
+                        .HasForeignKey("DrawingDBId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("XMLWebApiCore.Models.DBClasses.SignalLineDB", b =>
                 {
                     b.HasOne("XMLWebApiCore.Models.DBClasses.DrawingDB", null)
@@ -588,11 +708,15 @@ namespace XMLWebApiCore.Migrations
 
                     b.Navigation("PipeConnectorSymbols");
 
+                    b.Navigation("PipingComponents");
+
                     b.Navigation("PipingNetworkSystems");
 
                     b.Navigation("ProcessInstruments");
 
                     b.Navigation("ProcessLines");
+
+                    b.Navigation("PropertyBreaks");
 
                     b.Navigation("SignalLines");
                 });
